@@ -4,6 +4,9 @@ import { getCollection } from "@/lib/collections";
 import UploadForm from "./UploadForm";
 import PhotosGrid from "./PhotosGrid";
 
+// Depends on live Supabase data and cookies — never prerender at build time.
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {

@@ -5,6 +5,9 @@ export const metadata = {
   title: "Collections — Alexandra Nikita",
 };
 
+// Data is live/mutable in Supabase — never prerender this at build time.
+export const dynamic = "force-dynamic";
+
 export default async function CollectionsPage() {
   const collections = await getCollections();
 

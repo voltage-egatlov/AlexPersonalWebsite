@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getCollection } from "@/lib/collections";
 import Gallery from "@/components/Gallery";
 
+// Data is live/mutable in Supabase — never prerender this at build time.
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {

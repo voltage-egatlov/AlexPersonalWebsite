@@ -6,6 +6,9 @@ export const metadata = {
   title: "Admin — Alexandra Nikita",
 };
 
+// Depends on live Supabase data and cookies — never prerender at build time.
+export const dynamic = "force-dynamic";
+
 export default async function AdminPage() {
   const collections = await getCollections();
 
