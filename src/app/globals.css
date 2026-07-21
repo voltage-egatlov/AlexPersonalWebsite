@@ -359,6 +359,201 @@ a {
   font-size: 17px;
 }
 
+/* Admin */
+
+.home-hero-empty {
+  position: absolute;
+  inset: 0;
+  background: var(--paper-dark);
+}
+
+.admin-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.admin-logout,
+.admin-create-form button,
+.admin-login-form button,
+.admin-list-actions button,
+.admin-photo-actions button {
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--panel);
+  border: 1px solid var(--ink);
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.admin-logout:hover,
+.admin-create-form button:hover,
+.admin-login-form button:hover,
+.admin-list-actions button:hover:not(:disabled),
+.admin-photo-actions button:hover:not(:disabled) {
+  border-color: var(--stamp-red);
+  color: var(--stamp-red);
+}
+
+.admin-list-actions button:disabled,
+.admin-photo-actions button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.admin-list-actions button.danger:hover:not(:disabled),
+.admin-photo-actions button.danger:hover:not(:disabled) {
+  background: var(--stamp-red);
+  color: var(--paper);
+  border-color: var(--stamp-red);
+}
+
+.admin-create-form,
+.admin-login-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  max-width: 420px;
+}
+
+.admin-create-form input,
+.admin-login-form input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.admin-error {
+  width: 100%;
+  color: var(--stamp-red);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.admin-list-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.admin-list-title {
+  flex: 1;
+  font-size: 15px;
+}
+
+.admin-list-title:hover {
+  color: var(--stamp-red);
+}
+
+.admin-list-meta {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.admin-list-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-dropzone {
+  border: 2px dashed var(--ink);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: 13px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.admin-dropzone-active {
+  border-color: var(--stamp-red);
+  background: rgba(163, 51, 38, 0.06);
+}
+
+.admin-upload-status {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+.admin-upload-status li[data-state="pending"] {
+  color: var(--ink-soft);
+}
+
+.admin-upload-status li[data-state="done"] {
+  color: var(--ink);
+}
+
+.admin-upload-status li[data-state="error"] {
+  color: var(--stamp-red);
+}
+
+.admin-upload-pending {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--stamp-red);
+}
+
+.admin-photo-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.admin-photo-tile {
+  border: 1px solid var(--ink);
+}
+
+.admin-photo-image {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--paper-dark);
+}
+
+.admin-photo-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: var(--stamp-red);
+  color: var(--paper);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+}
+
+.admin-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--ink);
+}
+
 @media (max-width: 720px) {
   .sidebar {
     position: static;

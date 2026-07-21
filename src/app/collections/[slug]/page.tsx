@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { collections, getCollection } from "@/data/collections";
+import { getCollection } from "@/lib/collections";
 import Gallery from "@/components/Gallery";
-
-export function generateStaticParams() {
-  return collections.map((c) => ({ slug: c.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -13,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const collection = getCollection(slug);
+  const collection = await getCollection(slug);
   return { title: collection ? `${collection.title} — Alexandra Nikita` : "Collection" };
 }
 
@@ -23,7 +19,7 @@ export default async function CollectionPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const collection = getCollection(slug);
+  const collection = await getCollection(slug);
 
   if (!collection) {
     notFound();
@@ -44,7 +40,14 @@ export default async function CollectionPage({
           </div>
         </div>
       </div>
-      <Gallery photos={collection.photos} title={collection.title} />
+      {collection.photos.length === 0 ? (
+        <p style={{ padding: "0 64px 64px" }}>No photos in this collection yet.</p>
+      ) : (
+        <Gallery
+          photos={collection.photos.map((p) => p.url)}
+          title={collection.title}
+        />
+      )}
     </div>
   );
 }

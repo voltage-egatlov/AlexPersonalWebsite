@@ -41,6 +41,9 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <span>PHOTOGRAPHY DOSSIER</span>
         <span>EST. {new Date().getFullYear()}</span>
+        <Link href="/admin" style={{ marginTop: 6 }}>
+          Admin
+        </Link>
       </div>
     </nav>
   );

@@ -1,16 +1,23 @@
 import Image from "next/image";
+import { getFeaturedPhoto } from "@/lib/collections";
 
-export default function Home() {
+export default async function Home() {
+  const featured = await getFeaturedPhoto();
+
   return (
     <div className="home-hero">
-      <Image
-        src="/placeholders/placeholder-01.jpg"
-        alt="Alexandra Nikita — featured photograph"
-        fill
-        sizes="100vw"
-        style={{ objectFit: "cover" }}
-        preload
-      />
+      {featured ? (
+        <Image
+          src={featured.url}
+          alt="Alexandra Nikita — featured photograph"
+          fill
+          sizes="100vw"
+          style={{ objectFit: "cover" }}
+          preload
+        />
+      ) : (
+        <div className="home-hero-empty" />
+      )}
       <div className="home-hero-caption">
         <div className="name">Alexandra Nikita</div>
         <div className="sub">Photography</div>

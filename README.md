@@ -1,5 +1,25 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Setup (Supabase-backed collections)
+
+Collections and photos are stored in Supabase (Postgres + Storage), not
+hardcoded. The schema lives in `supabase/migrations/` and is applied
+automatically by Supabase's GitHub integration whenever it's pushed to `main`.
+
+To run locally:
+
+1. Copy `.env.local.example` to `.env.local`.
+2. Fill in `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the Supabase
+   project's Settings > API page.
+3. Pick an `ADMIN_PASSCODE` (whatever Alex will type to reach `/admin`) and
+   generate `ADMIN_SESSION_SECRET` with `openssl rand -hex 32`.
+4. Set the same four variables in Vercel's project settings for production.
+
+`/admin` is where photos get uploaded and collections get created, renamed,
+reordered, or deleted. It's gated by the passcode, not a full login — anyone
+with the passcode and a link can manage the site, which is the intended scope
+for a single-person portfolio.
+
 ## Getting Started
 
 First, run the development server:
