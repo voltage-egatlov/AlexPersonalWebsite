@@ -115,6 +115,9 @@ export default function Gallery({
           <span className="lightbox-count">
             {openIndex + 1} / {photos.length}
           </span>
+          <span className="lightbox-hint" aria-hidden="true">
+            ← → browse · esc close
+          </span>
         </div>
       )}
     </>

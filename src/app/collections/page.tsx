@@ -16,7 +16,10 @@ export default async function CollectionsPage() {
       <div className="page-eyebrow">Index</div>
       <h1 className="page-title">Collections</h1>
       {collections.length === 0 ? (
-        <p>No collections yet.</p>
+        <div className="empty-block">
+          <span className="stamp-tag">No records</span>
+          <p>Nothing has been filed here yet.</p>
+        </div>
       ) : (
         <ul className="collections-list">
           {collections.map((c) => (

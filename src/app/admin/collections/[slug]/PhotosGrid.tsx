@@ -53,7 +53,12 @@ export default function PhotosGrid({
   }
 
   if (photos.length === 0) {
-    return <p>No photos in this collection yet — upload some above.</p>;
+    return (
+      <div className="empty-block">
+        <span className="stamp-tag">Empty</span>
+        <p>No photos in this collection yet — upload some above.</p>
+      </div>
+    );
   }
 
   return (

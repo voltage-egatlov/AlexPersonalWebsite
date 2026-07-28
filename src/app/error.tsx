@@ -15,8 +15,10 @@ export default function Error({
 
   return (
     <div className="page">
-      <div className="page-eyebrow">Error</div>
-      <h1 className="page-title">Something Went Wrong</h1>
+      <span className="stamp-tag">Incident Report</span>
+      <h1 className="page-title" style={{ marginTop: 14 }}>
+        Something Went Wrong
+      </h1>
       <p>
         The page hit a snag loading this content. This is usually temporary
         — try again in a moment.

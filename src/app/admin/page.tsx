@@ -40,7 +40,10 @@ export default async function AdminPage() {
       </form>
 
       {collections.length === 0 ? (
-        <p>No collections yet — create one above.</p>
+        <div className="empty-block">
+          <span className="stamp-tag">Empty</span>
+          <p>No collections yet — create one above.</p>
+        </div>
       ) : (
         <CollectionsList collections={collections} />
       )}

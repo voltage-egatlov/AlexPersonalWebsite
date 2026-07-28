@@ -8,6 +8,12 @@ type FileStatus = { id: number; name: string; state: "pending" | "done" | "error
 
 let statusId = 0;
 
+const STATE_LABEL: Record<FileStatus["state"], string> = {
+  pending: "filing…",
+  done: "filed",
+  error: "rejected",
+};
+
 export default function UploadForm({
   collectionId,
   collectionSlug,
@@ -87,7 +93,7 @@ export default function UploadForm({
         <ul className="admin-upload-status">
           {statuses.map((s) => (
             <li key={s.id} data-state={s.state}>
-              {s.name} — {s.state}
+              {s.name} — {STATE_LABEL[s.state]}
             </li>
           ))}
         </ul>

@@ -44,7 +44,12 @@ export default async function CollectionPage({
         </div>
       </div>
       {collection.photos.length === 0 ? (
-        <p style={{ padding: "0 64px 64px" }}>No photos in this collection yet.</p>
+        <div style={{ padding: "0 64px 64px" }}>
+          <div className="empty-block">
+            <span className="stamp-tag">No records</span>
+            <p>No photographs on file for this collection yet.</p>
+          </div>
+        </div>
       ) : (
         <Gallery
           photos={collection.photos.map((p) => p.url)}

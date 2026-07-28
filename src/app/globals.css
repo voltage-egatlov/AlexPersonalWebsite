@@ -232,6 +232,40 @@ a {
   text-transform: uppercase;
 }
 
+/* Reusable case-file stamp tag, echoing the sidebar's FILE NO. mark */
+
+.stamp-tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--stamp-red);
+  border: 1px solid var(--stamp-red);
+  padding: 2px 6px;
+  margin-bottom: 12px;
+  transform: rotate(-1deg);
+  text-transform: uppercase;
+}
+
+/* Empty states: an unopened folder, not just missing content */
+
+.empty-block {
+  border: 2px dashed var(--ink);
+  padding: 28px 32px;
+  max-width: 420px;
+}
+
+.empty-block .stamp-tag {
+  margin-bottom: 10px;
+}
+
+.empty-block p {
+  margin: 0;
+  max-width: none;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
 /* Collections list */
 
 .collections-list {
@@ -329,6 +363,43 @@ a {
   height: 82vh;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox {
+    animation: lightbox-fade-in 0.15s ease-out both;
+  }
+
+  .lightbox-image {
+    animation: lightbox-surface-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .lightbox-close,
+  .lightbox-arrow,
+  .lightbox-count,
+  .lightbox-hint {
+    animation: lightbox-fade-in 0.22s ease-out 0.08s both;
+  }
+}
+
+@keyframes lightbox-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lightbox-surface-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .lightbox-close {
   position: absolute;
   top: 16px;
@@ -371,10 +442,30 @@ a {
   position: absolute;
   bottom: 24px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) rotate(-1deg);
+  background: var(--paper);
+  border: 1px solid var(--stamp-red);
+  color: var(--stamp-red);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 4px 10px;
+}
+
+.lightbox-hint {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
   color: var(--paper);
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  opacity: 0.55;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .lightbox-hint {
+    display: none;
+  }
 }
 
 /* Contact */
