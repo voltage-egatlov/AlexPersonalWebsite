@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #d9cd9c;
-  --paper-dark: #cabb82;
-  --panel: #c7b87e;
+  --paper: #e8f8f6;
+  --paper-dark: #d3ece8;
+  --panel: #cfe9e5;
   --ink: #2a2318;
   --ink-soft: #4c412c;
   --stamp-red: #a33326;
   --rule: rgba(42, 35, 24, 0.35);
   --sidebar-width: 250px;
+  --sidebar-bg: #e8f8f6;
 }
 
 * {
@@ -48,7 +49,7 @@ a {
   left: 0;
   bottom: 0;
   width: var(--sidebar-width);
-  background: var(--panel);
+  background: var(--sidebar-bg);
   border-right: 3px solid var(--ink);
   display: flex;
   flex-direction: column;
@@ -116,7 +117,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--ink-soft);
   border-top: 1px dashed var(--rule);
@@ -194,6 +195,41 @@ a {
   line-height: 1.85;
   color: var(--ink-soft);
   margin-bottom: 18px;
+  max-width: 65ch;
+}
+
+/* Status pages (error / not-found / loading) & shared inline actions */
+
+.action-button {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--panel);
+  border: 1px solid var(--ink);
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.action-button:hover {
+  border-color: var(--stamp-red);
+  color: var(--stamp-red);
+}
+
+.inline-error {
+  color: var(--stamp-red);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  margin: -8px 0 16px;
+}
+
+.page-loading {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
 }
 
 /* Collections list */
@@ -216,12 +252,12 @@ a {
   padding: 16px 4px;
   font-size: 16px;
   letter-spacing: 0.02em;
-  transition: color 0.15s ease, padding-left 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .collections-list a:hover {
   color: var(--stamp-red);
-  padding-left: 12px;
+  transform: translateX(12px);
 }
 
 .collections-list .file-no {
@@ -295,8 +331,13 @@ a {
 
 .lightbox-close {
   position: absolute;
-  top: 24px;
-  right: 32px;
+  top: 16px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 32px;
   color: var(--paper);
   background: none;

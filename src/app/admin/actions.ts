@@ -3,9 +3,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-admin";
 import { slugify } from "@/lib/slug";
-import { SESSION_COOKIE_NAME } from "@/lib/session";
+import { SESSION_COOKIE_NAME, requireAdminSession } from "@/lib/session";
 
 export async function logout() {
   const cookieStore = await cookies();
@@ -13,12 +14,33 @@ export async function logout() {
   redirect("/admin/login");
 }
 
+// Collections.slug is unique, and two different titles ("Paris!" vs
+// "Paris?") can slugify to the same value. Rather than let the DB's unique
+// constraint throw and crash the page, disambiguate with a numeric suffix.
+async function uniqueSlug(
+  db: SupabaseClient,
+  base: string,
+  excludeId?: string
+) {
+  let candidate = base;
+  let attempt = 2;
+  for (;;) {
+    let query = db.from("collections").select("id").eq("slug", candidate);
+    if (excludeId) query = query.neq("id", excludeId);
+    const { data } = await query.maybeSingle();
+    if (!data) return candidate;
+    candidate = `${base}-${attempt++}`;
+  }
+}
+
 export async function createCollection(formData: FormData) {
+  await requireAdminSession();
+
   const title = String(formData.get("title") ?? "").trim();
   if (!title) return;
 
   const db = supabaseAdmin();
-  const slug = slugify(title);
+  const slug = await uniqueSlug(db, slugify(title));
 
   const { count } = await db
     .from("collections")
@@ -44,13 +66,16 @@ export async function createCollection(formData: FormData) {
 }
 
 export async function renameCollection(collectionId: string, title: string) {
+  await requireAdminSession();
+
   const trimmed = title.trim();
   if (!trimmed) return;
 
   const db = supabaseAdmin();
+  const slug = await uniqueSlug(db, slugify(trimmed), collectionId);
   const { error } = await db
     .from("collections")
-    .update({ title: trimmed, slug: slugify(trimmed) })
+    .update({ title: trimmed, slug })
     .eq("id", collectionId);
   if (error) throw error;
 
@@ -59,6 +84,8 @@ export async function renameCollection(collectionId: string, title: string) {
 }
 
 export async function deleteCollection(collectionId: string) {
+  await requireAdminSession();
+
   const db = supabaseAdmin();
 
   const { data: photos, error: photosError } = await db
@@ -85,6 +112,8 @@ export async function moveCollection(
   collectionId: string,
   direction: "up" | "down"
 ) {
+  await requireAdminSession();
+
   const db = supabaseAdmin();
   const { data: collections, error } = await db
     .from("collections")

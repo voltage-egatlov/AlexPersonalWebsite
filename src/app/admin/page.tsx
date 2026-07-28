@@ -29,7 +29,13 @@ export default async function AdminPage() {
       </div>
 
       <form action={createCollection} className="admin-create-form">
-        <input type="text" name="title" placeholder="New collection title" required />
+        <input
+          type="text"
+          name="title"
+          placeholder="New collection title"
+          aria-label="New collection title"
+          required
+        />
         <button type="submit">Create</button>
       </form>
 

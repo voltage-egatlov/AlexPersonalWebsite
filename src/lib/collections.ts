@@ -17,24 +17,32 @@ export type Collection = {
   photos: Photo[];
 };
 
+// Lightweight shape for list views (/collections index, /admin dashboard)
+// that only ever display a photo count, not the photos themselves.
+export type CollectionSummary = {
+  id: string;
+  slug: string;
+  title: string;
+  fileNo: string;
+  sortOrder: number;
+  photoCount: number;
+};
+
 function publicUrlFor(path: string) {
   return supabaseAdmin().storage.from(PHOTOS_BUCKET).getPublicUrl(path).data
     .publicUrl;
 }
 
-export async function getCollections(): Promise<Collection[]> {
+export async function getCollections(): Promise<CollectionSummary[]> {
   const db = supabaseAdmin();
+  // Ask Postgres for the photo count per collection instead of hydrating
+  // every photo row just to call .length on it — keeps the payload flat
+  // regardless of how large the photo library gets.
   const { data: collections, error } = await db
     .from("collections")
-    .select("id, slug, title, file_no, sort_order")
+    .select("id, slug, title, file_no, sort_order, photos(count)")
     .order("sort_order", { ascending: true });
   if (error) throw error;
-
-  const { data: photos, error: photosError } = await db
-    .from("photos")
-    .select("id, collection_id, storage_path, sort_order, is_featured")
-    .order("sort_order", { ascending: true });
-  if (photosError) throw photosError;
 
   return (collections ?? []).map((c) => ({
     id: c.id,
@@ -42,15 +50,7 @@ export async function getCollections(): Promise<Collection[]> {
     title: c.title,
     fileNo: c.file_no,
     sortOrder: c.sort_order,
-    photos: (photos ?? [])
-      .filter((p) => p.collection_id === c.id)
-      .map((p) => ({
-        id: p.id,
-        url: publicUrlFor(p.storage_path),
-        storagePath: p.storage_path,
-        sortOrder: p.sort_order,
-        isFeatured: p.is_featured,
-      })),
+    photoCount: c.photos?.[0]?.count ?? 0,
   }));
 }
 

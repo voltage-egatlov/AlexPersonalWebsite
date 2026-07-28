@@ -3,18 +3,36 @@
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-admin";
+import { requireAdminSession } from "@/lib/session";
 
 function sanitizeFilename(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
 }
+
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+]);
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25MB
 
 export async function uploadPhoto(
   collectionId: string,
   collectionSlug: string,
   formData: FormData
 ) {
+  await requireAdminSession();
+
   const file = formData.get("file");
   if (!(file instanceof File)) throw new Error("No file provided");
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    throw new Error(`Unsupported file type: ${file.type || "unknown"}`);
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error("File is larger than the 25MB upload limit");
+  }
 
   const db = supabaseAdmin();
   const path = `${collectionId}/${randomUUID()}-${sanitizeFilename(file.name)}`;
@@ -45,6 +63,8 @@ export async function uploadPhoto(
 }
 
 export async function deletePhoto(photoId: string, collectionSlug: string) {
+  await requireAdminSession();
+
   const db = supabaseAdmin();
 
   const { data: photo, error } = await db
@@ -72,6 +92,8 @@ export async function movePhoto(
   collectionSlug: string,
   direction: "up" | "down"
 ) {
+  await requireAdminSession();
+
   const db = supabaseAdmin();
   const { data: photos, error } = await db
     .from("photos")
@@ -98,6 +120,8 @@ export async function movePhoto(
 }
 
 export async function setFeaturedPhoto(photoId: string, collectionSlug: string) {
+  await requireAdminSession();
+
   const db = supabaseAdmin();
 
   await db.from("photos").update({ is_featured: false }).neq("id", photoId);

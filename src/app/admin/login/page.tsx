@@ -17,6 +17,7 @@ export default function LoginPage() {
           type="password"
           name="passcode"
           placeholder="Passcode"
+          aria-label="Passcode"
           autoFocus
           required
         />
