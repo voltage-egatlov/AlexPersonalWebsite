@@ -2,21 +2,21 @@ import { getPhotos } from "@/lib/photos";
 import Gallery from "@/components/Gallery";
 
 export const metadata = {
-  title: "Gallery — Alexandra Nikita",
+  title: "Photography — Alexandra Nikita",
 };
 
 // Data is live/mutable in Supabase — never prerender this at build time.
 export const dynamic = "force-dynamic";
 
-export default async function GalleryPage() {
-  const photos = await getPhotos("gallery");
+export default async function PhotographyPage() {
+  const photos = await getPhotos("photography");
 
   return (
     <div>
       <div className="page" style={{ paddingBottom: 32 }}>
         <div className="page-eyebrow">Exhibits</div>
         <h1 className="page-title" style={{ marginBottom: 0 }}>
-          Gallery
+          Photography
         </h1>
       </div>
       {photos.length === 0 ? (
@@ -27,7 +27,7 @@ export default async function GalleryPage() {
           </div>
         </div>
       ) : (
-        <Gallery photos={photos.map((p) => p.url)} title="Gallery" />
+        <Gallery photos={photos.map((p) => p.url)} title="Photography" />
       )}
     </div>
   );
