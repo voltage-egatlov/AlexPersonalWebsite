@@ -1,8 +1,8 @@
 import { supabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-admin";
 
-export type Section = "photography" | "prints";
+export type Section = "photo" | "prints";
 
-export const SECTIONS: Section[] = ["photography", "prints"];
+export const SECTIONS: Section[] = ["photo", "prints"];
 
 export type Photo = {
   id: string;

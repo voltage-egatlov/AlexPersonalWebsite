@@ -14,9 +14,9 @@ export default async function AdminPage() {
 
   const sections = [
     {
-      href: "/admin/photography",
-      title: "Photography",
-      meta: `${counts.photography} photo(s)`,
+      href: "/admin/photo",
+      title: "Photo",
+      meta: `${counts.photo} photo(s)`,
     },
     {
       href: "/admin/prints",
@@ -48,7 +48,7 @@ export default async function AdminPage() {
 
       <p style={{ marginBottom: 24 }}>
         The home page hero is whichever photo is marked &ldquo;Set as
-        hero&rdquo; inside Photography or Prints.
+        hero&rdquo; inside Photo or Prints.
       </p>
 
       <ul className="admin-list">

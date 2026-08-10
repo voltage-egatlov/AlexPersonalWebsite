@@ -4,14 +4,14 @@ import UploadForm from "../UploadForm";
 import PhotosGrid from "../PhotosGrid";
 
 export const metadata = {
-  title: "Admin — Photography",
+  title: "Admin — Photo",
 };
 
 // Depends on live Supabase data and cookies — never prerender at build time.
 export const dynamic = "force-dynamic";
 
-export default async function AdminPhotographyPage() {
-  const photos = await getPhotos("photography");
+export default async function AdminPhotoPage() {
+  const photos = await getPhotos("photo");
 
   return (
     <div className="page">
@@ -22,15 +22,15 @@ export default async function AdminPhotographyPage() {
         <div>
           <div className="page-eyebrow">Manage</div>
           <h1 className="page-title" style={{ marginBottom: 0, border: "none" }}>
-            Photography
+            Photo
           </h1>
         </div>
       </div>
 
-      <UploadForm section="photography" />
+      <UploadForm section="photo" />
 
       <div style={{ marginTop: 24 }}>
-        <PhotosGrid photos={photos} section="photography" />
+        <PhotosGrid photos={photos} section="photo" />
       </div>
     </div>
   );
