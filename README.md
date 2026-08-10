@@ -1,10 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Setup (Supabase-backed collections)
+## Setup
 
-Collections and photos are stored in Supabase (Postgres + Storage), not
-hardcoded. The schema lives in `supabase/migrations/` and is applied
-automatically by Supabase's GitHub integration whenever it's pushed to `main`.
+The site has four sections — Home, Gallery, Prints, and About — all backed
+by Supabase (Postgres + Storage), not hardcoded. The schema lives in
+`supabase/migrations/` and is applied automatically by Supabase's GitHub
+integration whenever it's pushed to `main`.
+
+- **Home** shows whichever photo is marked as the hero (from Gallery or
+  Prints).
+- **Gallery** and **Prints** are each a flat, ordered set of photos.
+- **About** is editable body copy plus contact details (phone, email,
+  Instagram).
 
 To run locally:
 
@@ -15,10 +22,11 @@ To run locally:
    generate `ADMIN_SESSION_SECRET` with `openssl rand -hex 32`.
 4. Set the same four variables in Vercel's project settings for production.
 
-`/admin` is where photos get uploaded and collections get created, renamed,
-reordered, or deleted. It's gated by the passcode, not a full login — anyone
-with the passcode and a link can manage the site, which is the intended scope
-for a single-person portfolio.
+`/admin` is where all four sections get managed — Gallery and Prints photos
+get uploaded, reordered, deleted, and marked as the home hero, and About's
+copy and contact details get edited. It's gated by the passcode, not a full
+login — anyone with the passcode and a link can manage the site, which is
+the intended scope for a single-person portfolio.
 
 ## Getting Started
 

@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-admin";
 import { requireAdminSession } from "@/lib/session";
+import type { Section } from "@/lib/photos";
 
 function sanitizeFilename(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
@@ -18,11 +19,13 @@ const ALLOWED_IMAGE_TYPES = new Set([
 ]);
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25MB
 
-export async function uploadPhoto(
-  collectionId: string,
-  collectionSlug: string,
-  formData: FormData
-) {
+function revalidateSection(section: Section) {
+  revalidatePath(`/admin/${section}`);
+  revalidatePath(`/${section}`);
+  revalidatePath("/"); // hero may have changed
+}
+
+export async function uploadPhoto(section: Section, formData: FormData) {
   await requireAdminSession();
 
   const file = formData.get("file");
@@ -35,7 +38,7 @@ export async function uploadPhoto(
   }
 
   const db = supabaseAdmin();
-  const path = `${collectionId}/${randomUUID()}-${sanitizeFilename(file.name)}`;
+  const path = `${section}/${randomUUID()}-${sanitizeFilename(file.name)}`;
 
   const { error: uploadError } = await db.storage
     .from(PHOTOS_BUCKET)
@@ -45,24 +48,22 @@ export async function uploadPhoto(
   const { data: maxRow } = await db
     .from("photos")
     .select("sort_order")
-    .eq("collection_id", collectionId)
+    .eq("section", section)
     .order("sort_order", { ascending: false })
     .limit(1)
     .maybeSingle();
 
   const { error: insertError } = await db.from("photos").insert({
-    collection_id: collectionId,
+    section,
     storage_path: path,
     sort_order: (maxRow?.sort_order ?? -1) + 1,
   });
   if (insertError) throw insertError;
 
-  revalidatePath(`/admin/collections/${collectionSlug}`);
-  revalidatePath(`/collections/${collectionSlug}`);
-  revalidatePath("/collections");
+  revalidateSection(section);
 }
 
-export async function deletePhoto(photoId: string, collectionSlug: string) {
+export async function deletePhoto(photoId: string, section: Section) {
   await requireAdminSession();
 
   const db = supabaseAdmin();
@@ -81,15 +82,12 @@ export async function deletePhoto(photoId: string, collectionSlug: string) {
   const { error: deleteError } = await db.from("photos").delete().eq("id", photoId);
   if (deleteError) throw deleteError;
 
-  revalidatePath(`/admin/collections/${collectionSlug}`);
-  revalidatePath(`/collections/${collectionSlug}`);
-  revalidatePath("/");
+  revalidateSection(section);
 }
 
 export async function movePhoto(
   photoId: string,
-  collectionId: string,
-  collectionSlug: string,
+  section: Section,
   direction: "up" | "down"
 ) {
   await requireAdminSession();
@@ -98,7 +96,7 @@ export async function movePhoto(
   const { data: photos, error } = await db
     .from("photos")
     .select("id, sort_order")
-    .eq("collection_id", collectionId)
+    .eq("section", section)
     .order("sort_order", { ascending: true });
   if (error) throw error;
   if (!photos) return;
@@ -115,11 +113,10 @@ export async function movePhoto(
     db.from("photos").update({ sort_order: a.sort_order }).eq("id", b.id),
   ]);
 
-  revalidatePath(`/admin/collections/${collectionSlug}`);
-  revalidatePath(`/collections/${collectionSlug}`);
+  revalidateSection(section);
 }
 
-export async function setFeaturedPhoto(photoId: string, collectionSlug: string) {
+export async function setFeaturedPhoto(photoId: string, section: Section) {
   await requireAdminSession();
 
   const db = supabaseAdmin();
@@ -131,6 +128,5 @@ export async function setFeaturedPhoto(photoId: string, collectionSlug: string) 
     .eq("id", photoId);
   if (error) throw error;
 
-  revalidatePath(`/admin/collections/${collectionSlug}`);
-  revalidatePath("/");
+  revalidateSection(section);
 }

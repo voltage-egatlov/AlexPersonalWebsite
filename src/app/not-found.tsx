@@ -11,7 +11,7 @@ export default function NotFound() {
       <h1 className="page-title" style={{ marginTop: 14 }}>
         Missing From Record
       </h1>
-      <p>The page or collection you&apos;re looking for doesn&apos;t exist.</p>
+      <p>The page you&apos;re looking for doesn&apos;t exist.</p>
       <Link href="/" className="action-button">
         Return home
       </Link>

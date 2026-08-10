@@ -1,6 +1,6 @@
-import { getCollections } from "@/lib/collections";
-import { createCollection, logout } from "./actions";
-import CollectionsList from "./CollectionsList";
+import Link from "next/link";
+import { getSectionCounts } from "@/lib/photos";
+import { logout } from "./actions";
 
 export const metadata = {
   title: "Admin — Alexandra Nikita",
@@ -10,7 +10,25 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const collections = await getCollections();
+  const counts = await getSectionCounts();
+
+  const sections = [
+    {
+      href: "/admin/gallery",
+      title: "Gallery",
+      meta: `${counts.gallery} photo(s)`,
+    },
+    {
+      href: "/admin/prints",
+      title: "Prints",
+      meta: `${counts.prints} photo(s)`,
+    },
+    {
+      href: "/admin/about",
+      title: "About & contact",
+      meta: "Page copy",
+    },
+  ];
 
   return (
     <div className="page">
@@ -28,25 +46,21 @@ export default async function AdminPage() {
         </form>
       </div>
 
-      <form action={createCollection} className="admin-create-form">
-        <input
-          type="text"
-          name="title"
-          placeholder="New collection title"
-          aria-label="New collection title"
-          required
-        />
-        <button type="submit">Create</button>
-      </form>
+      <p style={{ marginBottom: 24 }}>
+        The home page hero is whichever photo is marked &ldquo;Set as
+        hero&rdquo; inside Gallery or Prints.
+      </p>
 
-      {collections.length === 0 ? (
-        <div className="empty-block">
-          <span className="stamp-tag">Empty</span>
-          <p>No collections yet — create one above.</p>
-        </div>
-      ) : (
-        <CollectionsList collections={collections} />
-      )}
+      <ul className="admin-list">
+        {sections.map((s) => (
+          <li key={s.href} className="admin-list-row">
+            <Link href={s.href} className="admin-list-title">
+              {s.title}
+            </Link>
+            <span className="admin-list-meta">{s.meta}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

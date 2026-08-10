@@ -2,17 +2,15 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import type { Photo } from "@/lib/collections";
-import { deletePhoto, movePhoto, setFeaturedPhoto } from "./actions";
+import type { Photo, Section } from "@/lib/photos";
+import { deletePhoto, movePhoto, setFeaturedPhoto } from "./photo-actions";
 
 export default function PhotosGrid({
   photos,
-  collectionId,
-  collectionSlug,
+  section,
 }: {
   photos: Photo[];
-  collectionId: string;
-  collectionSlug: string;
+  section: Section;
 }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +21,7 @@ export default function PhotosGrid({
     setError(null);
     startTransition(async () => {
       try {
-        await deletePhoto(photo.id, collectionSlug);
+        await deletePhoto(photo.id, section);
       } catch {
         setError("Couldn't delete that photo. Try again.");
       }
@@ -34,7 +32,7 @@ export default function PhotosGrid({
     setError(null);
     startTransition(async () => {
       try {
-        await movePhoto(photo.id, collectionId, collectionSlug, direction);
+        await movePhoto(photo.id, section, direction);
       } catch {
         setError("Couldn't reorder that photo. Try again.");
       }
@@ -45,7 +43,7 @@ export default function PhotosGrid({
     setError(null);
     startTransition(async () => {
       try {
-        await setFeaturedPhoto(photo.id, collectionSlug);
+        await setFeaturedPhoto(photo.id, section);
       } catch {
         setError("Couldn't set that photo as the hero. Try again.");
       }
@@ -56,7 +54,7 @@ export default function PhotosGrid({
     return (
       <div className="empty-block">
         <span className="stamp-tag">Empty</span>
-        <p>No photos in this collection yet — upload some above.</p>
+        <p>No photos here yet — upload some above.</p>
       </div>
     );
   }

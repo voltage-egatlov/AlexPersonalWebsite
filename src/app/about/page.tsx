@@ -1,30 +1,63 @@
+import { getSiteContent } from "@/lib/site-content";
+
 export const metadata = {
   title: "About — Alexandra Nikita",
 };
 
-export default function AboutPage() {
+// Data is live/mutable in Supabase — never prerender this at build time.
+export const dynamic = "force-dynamic";
+
+export default async function AboutPage() {
+  const content = await getSiteContent();
+  const paragraphs = content.aboutBody
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const contactRows = [
+    content.contactPhone && {
+      label: "Phone",
+      href: `tel:${content.contactPhone.replace(/[^0-9+]/g, "")}`,
+      value: content.contactPhone,
+    },
+    content.contactEmail && {
+      label: "Email",
+      href: `mailto:${content.contactEmail}`,
+      value: content.contactEmail,
+    },
+    content.contactInstagramUrl && {
+      label: "Instagram",
+      href: content.contactInstagramUrl,
+      value: `${content.contactInstagramLabel || "Instagram"} ↗`,
+    },
+  ].filter(Boolean) as { label: string; href: string; value: string }[];
+
   return (
     <div className="page">
       <div className="page-eyebrow">Subject</div>
       <h1 className="page-title">About</h1>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-        minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-        aliquip ex ea commodo consequat.
-      </p>
-      <p>
-        Duis aute irure dolor in reprehenderit in voluptate velit esse
-        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-        cupidatat non proident, sunt in culpa qui officia deserunt mollit
-        anim id est laborum.
-      </p>
-      <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-        quae ab illo inventore veritatis et quasi architecto beatae vitae
-        dicta sunt explicabo.
-      </p>
+
+      {paragraphs.length === 0 ? (
+        <div className="empty-block">
+          <span className="stamp-tag">No records</span>
+          <p>Nothing has been filed here yet.</p>
+        </div>
+      ) : (
+        paragraphs.map((p, i) => <p key={i}>{p}</p>)
+      )}
+
+      {contactRows.length > 0 && (
+        <div className="contact-block" style={{ marginTop: 28 }}>
+          {contactRows.map((row) => (
+            <div className="contact-row" key={row.label}>
+              <div className="label">{row.label}</div>
+              <a className="value" href={row.href}>
+                {row.value}
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

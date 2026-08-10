@@ -2,7 +2,8 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { uploadPhoto } from "./actions";
+import type { Section } from "@/lib/photos";
+import { uploadPhoto } from "./photo-actions";
 
 type FileStatus = { id: number; name: string; state: "pending" | "done" | "error" };
 
@@ -14,13 +15,7 @@ const STATE_LABEL: Record<FileStatus["state"], string> = {
   error: "rejected",
 };
 
-export default function UploadForm({
-  collectionId,
-  collectionSlug,
-}: {
-  collectionId: string;
-  collectionSlug: string;
-}) {
+export default function UploadForm({ section }: { section: Section }) {
   const [isPending, startTransition] = useTransition();
   const [statuses, setStatuses] = useState<FileStatus[]>([]);
   const [dragOver, setDragOver] = useState(false);
@@ -41,7 +36,7 @@ export default function UploadForm({
         const formData = new FormData();
         formData.set("file", file);
         try {
-          await uploadPhoto(collectionId, collectionSlug, formData);
+          await uploadPhoto(section, formData);
           setStatuses((prev) =>
             prev.map((s) => (s.id === id ? { ...s, state: "done" } : s))
           );
