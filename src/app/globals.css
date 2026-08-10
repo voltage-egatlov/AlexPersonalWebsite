@@ -232,6 +232,62 @@ a {
   text-transform: uppercase;
 }
 
+/* Skeletons — shaped placeholders for loading.tsx files, so a route's
+   fallback UI approximates its real layout instead of a bare "Loading…"
+   and doesn't jump around once content arrives. */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-dark);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-eyebrow {
+  width: 90px;
+  height: 13px;
+  margin-bottom: 10px;
+}
+
+.skeleton-title {
+  width: 220px;
+  height: 30px;
+  margin-bottom: 28px;
+}
+
+.skeleton-line {
+  height: 14.5px;
+  margin-bottom: 18px;
+  max-width: 65ch;
+}
+
+.skeleton-field {
+  height: 38px;
+  max-width: 420px;
+  margin-bottom: 20px;
+}
+
 /* Reusable case-file stamp tag, echoing the sidebar's FILE NO. mark */
 
 .stamp-tag {
