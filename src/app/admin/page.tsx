@@ -35,9 +35,7 @@ export default async function AdminPage() {
       <div className="admin-header">
         <div>
           <div className="page-eyebrow">Private</div>
-          <h1 className="page-title" style={{ marginBottom: 0, border: "none" }}>
-            Admin
-          </h1>
+          <h1 className="page-title page-title--plain">Admin</h1>
         </div>
         <form action={logout}>
           <button type="submit" className="admin-logout">
@@ -46,7 +44,7 @@ export default async function AdminPage() {
         </form>
       </div>
 
-      <p style={{ marginBottom: 24 }}>
+      <p className="admin-intro">
         The home page hero is whichever photo is marked &ldquo;Set as
         hero&rdquo; inside Photo or Prints.
       </p>

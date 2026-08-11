@@ -8,9 +8,7 @@ export default function NotFound() {
   return (
     <div className="page">
       <span className="stamp-tag">File No. 404</span>
-      <h1 className="page-title" style={{ marginTop: 14 }}>
-        Missing From Record
-      </h1>
+      <h1 className="page-title">Missing From Record</h1>
       <p>The page you&apos;re looking for doesn&apos;t exist.</p>
       <Link href="/" className="action-button">
         Return home

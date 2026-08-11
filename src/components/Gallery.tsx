@@ -77,7 +77,13 @@ export default function Gallery({
             onClick={(e) => openAt(i, e)}
             aria-label={`Open photo ${i + 1} of ${title}`}
           >
-            <Image src={src} alt={`${title} ${i + 1}`} fill sizes="220px" style={{ objectFit: "cover" }} />
+            <Image
+              src={src}
+              alt={`${title} ${i + 1}`}
+              fill
+              sizes="(max-width: 720px) calc(100vw - 48px), 220px"
+              style={{ objectFit: "cover" }}
+            />
           </button>
         ))}
       </div>
@@ -104,7 +110,7 @@ export default function Gallery({
               src={photos[openIndex]}
               alt={`${title} ${openIndex + 1}`}
               fill
-              sizes="90vw"
+              sizes="82vw"
               style={{ objectFit: "contain" }}
               preload
             />

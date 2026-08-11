@@ -47,7 +47,7 @@ export default async function AboutPage() {
       )}
 
       {contactRows.length > 0 && (
-        <div className="contact-block" style={{ marginTop: 28 }}>
+        <div className="contact-block">
           {contactRows.map((row) => (
             <div className="contact-row" key={row.label}>
               <div className="label">{row.label}</div>

@@ -17,11 +17,11 @@ export default function Sidebar() {
     <nav className="sidebar">
       <div className="sidebar-header">
         <span className="sidebar-tag">FILE NO. 001</span>
-        <h1 className="sidebar-name">
+        <p className="sidebar-name">
           Alexandra
           <br />
           Nikita
-        </h1>
+        </p>
       </div>
       <ul className="sidebar-nav">
         {NAV.map((item) => {
@@ -31,7 +31,11 @@ export default function Sidebar() {
               : pathname.startsWith(item.href);
           return (
             <li key={item.href}>
-              <Link href={item.href} className={active ? "active" : ""}>
+              <Link
+                href={item.href}
+                className={active ? "active" : ""}
+                aria-current={active ? "page" : undefined}
+              >
                 {item.label}
               </Link>
             </li>
@@ -39,11 +43,8 @@ export default function Sidebar() {
         })}
       </ul>
       <div className="sidebar-footer">
-        <span>PHOTOGRAPHY DOSSIER</span>
+        <span>PHOTO DOSSIER</span>
         <span>EST. {new Date().getFullYear()}</span>
-        <Link href="/admin" style={{ marginTop: 6 }}>
-          Admin
-        </Link>
       </div>
     </nav>
   );

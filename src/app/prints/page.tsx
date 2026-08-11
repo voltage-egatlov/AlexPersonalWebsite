@@ -13,17 +13,15 @@ export default async function PrintsPage() {
 
   return (
     <div>
-      <div className="page" style={{ paddingBottom: 32 }}>
-        <div className="page-eyebrow">Process</div>
-        <h1 className="page-title" style={{ marginBottom: 0 }}>
-          Prints
-        </h1>
+      <div className="page page--section-header">
+        <div className="page-eyebrow">Series</div>
+        <h1 className="page-title page-title--flush">Prints</h1>
       </div>
       {photos.length === 0 ? (
-        <div style={{ padding: "0 64px 64px" }}>
+        <div className="section-body">
           <div className="empty-block">
             <span className="stamp-tag">No records</span>
-            <p>No printing work on file yet.</p>
+            <p>No prints filed in this series yet.</p>
           </div>
         </div>
       ) : (

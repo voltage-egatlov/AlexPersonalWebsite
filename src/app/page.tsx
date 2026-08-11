@@ -22,8 +22,8 @@ export default async function Home() {
         <div className="home-hero-empty" />
       )}
       <div className="home-hero-caption">
-        <div className="name">Alexandra Nikita</div>
-        <div className="sub">Photography</div>
+        <h1 className="name">Alexandra Nikita</h1>
+        <p className="sub">Photography</p>
       </div>
     </div>
   );
