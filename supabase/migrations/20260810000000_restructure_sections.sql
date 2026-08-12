@@ -1,5 +1,5 @@
 -- Replace the "collections" model (many named albums, each holding photos)
--- with two fixed, flat sections — "gallery" and "prints" — plus a singleton
+-- with two fixed, flat sections - "gallery" and "prints" - plus a singleton
 -- table for the About page's editable copy (which now also carries the
 -- contact details that used to live on their own page).
 

@@ -20,7 +20,7 @@ const EMPTY_CONTENT: SiteContent = {
   contactInstagramUrl: "",
 };
 
-// site_content is a singleton (id = 1), seeded by migration — this should
+// site_content is a singleton (id = 1), seeded by migration - this should
 // always find a row, but fall back to empty rather than throwing so a
 // missing seed doesn't take the whole site down.
 export async function getSiteContent(): Promise<SiteContent> {

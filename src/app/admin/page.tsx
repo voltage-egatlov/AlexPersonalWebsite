@@ -3,10 +3,10 @@ import { getSectionCounts } from "@/lib/photos";
 import { logout } from "./actions";
 
 export const metadata = {
-  title: "Admin — Alexandra Nikita",
+  title: "Admin - Alexandra Nikita",
 };
 
-// Depends on live Supabase data and cookies — never prerender at build time.
+// Depends on live Supabase data and cookies - never prerender at build time.
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {

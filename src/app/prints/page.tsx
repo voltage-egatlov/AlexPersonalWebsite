@@ -2,10 +2,10 @@ import { getPhotos } from "@/lib/photos";
 import Gallery from "@/components/Gallery";
 
 export const metadata = {
-  title: "Prints — Alexandra Nikita",
+  title: "Prints - Alexandra Nikita",
 };
 
-// Data is live/mutable in Supabase — never prerender this at build time.
+// Data is live/mutable in Supabase - never prerender this at build time.
 export const dynamic = "force-dynamic";
 
 export default async function PrintsPage() {

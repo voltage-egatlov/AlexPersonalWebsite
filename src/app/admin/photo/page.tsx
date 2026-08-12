@@ -4,10 +4,10 @@ import UploadForm from "../UploadForm";
 import PhotosGrid from "../PhotosGrid";
 
 export const metadata = {
-  title: "Admin — Photo",
+  title: "Admin - Photo",
 };
 
-// Depends on live Supabase data and cookies — never prerender at build time.
+// Depends on live Supabase data and cookies - never prerender at build time.
 export const dynamic = "force-dynamic";
 
 export default async function AdminPhotoPage() {

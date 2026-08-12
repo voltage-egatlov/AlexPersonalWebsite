@@ -4,10 +4,10 @@ import AboutForm from "./AboutForm";
 import AboutPhotoForm from "./AboutPhotoForm";
 
 export const metadata = {
-  title: "Admin — About",
+  title: "Admin - About",
 };
 
-// Depends on live Supabase data and cookies — never prerender at build time.
+// Depends on live Supabase data and cookies - never prerender at build time.
 export const dynamic = "force-dynamic";
 
 export default async function AdminAboutPage() {

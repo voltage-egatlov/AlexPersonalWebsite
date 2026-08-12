@@ -3,13 +3,13 @@ import Image from "next/image";
 import { getSiteContent } from "@/lib/site-content";
 
 export const metadata = {
-  title: "About — Alexandra Nikita",
+  title: "About - Alexandra Nikita",
 };
 
-// Data is live/mutable in Supabase — never prerender this at build time.
+// Data is live/mutable in Supabase - never prerender this at build time.
 export const dynamic = "force-dynamic";
 
-// Bio copy supports plain-text Markdown-style links — [label](https://…) —
+// Bio copy supports plain-text Markdown-style links - [label](https://…)
 // so the story can point at real places (a school, a museum, a show)
 // without needing raw HTML in the admin textarea.
 const LINK_PATTERN = /\[([^\]]+)\]\(([^)]+)\)/g;

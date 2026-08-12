@@ -195,7 +195,7 @@ a {
 }
 
 /* Status pages (error / not-found / global-error) put the title right
-   after a stamp tag instead of a page-eyebrow — give it the same
+   after a stamp tag instead of a page-eyebrow - give it the same
    breathing room without a per-page inline override. */
 .stamp-tag + .page-title {
   margin-top: 14px;
@@ -262,7 +262,7 @@ a {
   text-transform: uppercase;
 }
 
-/* Skeletons — shaped placeholders for loading.tsx files, so a route's
+/* Skeletons - shaped placeholders for loading.tsx files, so a route's
    fallback UI approximates its real layout instead of a bare "Loading…"
    and doesn't jump around once content arrives. */
 
