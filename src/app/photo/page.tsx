@@ -25,7 +25,10 @@ export default async function PhotoPage() {
           </div>
         </div>
       ) : (
-        <Gallery photos={photos.map((p) => p.url)} title="Photo" />
+        <Gallery
+          photos={photos.map((p) => ({ url: p.url, width: p.width, height: p.height }))}
+          title="Photo"
+        />
       )}
     </div>
   );

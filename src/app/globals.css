@@ -375,16 +375,21 @@ a {
   border-color: var(--stamp-red);
 }
 
+/* Justified layout: a column of rows, each row a flex line of tiles sized
+   in JS (Gallery.tsx) to their true aspect ratio. */
 .tile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 4px;
+  display: flex;
+  flex-direction: column;
   padding: 0 64px 64px;
+}
+
+.tile-row {
+  display: flex;
 }
 
 .tile {
   position: relative;
-  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border: 1px solid var(--ink);
   cursor: pointer;
   padding: 0;
