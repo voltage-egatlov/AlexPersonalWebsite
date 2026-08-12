@@ -92,6 +92,20 @@ export default function Gallery({
     return () => observer.disconnect();
   }, []);
 
+  // Warm the browser cache with every photo at lightbox resolution, so
+  // clicking through never waits on the network. Deferred to an idle
+  // callback so the grid's own thumbnails get first crack at the
+  // connection instead of competing with this bulk prefetch.
+  const [preloadReady, setPreloadReady] = useState(false);
+  useEffect(() => {
+    const ric =
+      window.requestIdleCallback ??
+      ((cb: IdleRequestCallback) => window.setTimeout(cb, 200));
+    const cancelRic = window.cancelIdleCallback ?? window.clearTimeout;
+    const id = ric(() => setPreloadReady(true));
+    return () => cancelRic(id);
+  }, []);
+
   const rows = useMemo(
     () => layoutRows(photos, containerWidth),
     [photos, containerWidth]
@@ -174,6 +188,33 @@ export default function Gallery({
           </div>
         ))}
       </div>
+
+      {preloadReady && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            top: -99999,
+            left: -99999,
+            width: 1,
+            height: 1,
+            overflow: "hidden",
+            pointerEvents: "none",
+          }}
+        >
+          {photos.map((photo, i) => (
+            <Image
+              key={`preload-${photo.url}-${i}`}
+              src={photo.url}
+              alt=""
+              fill
+              sizes="82vw"
+              loading="eager"
+              style={{ objectFit: "contain" }}
+            />
+          ))}
+        </div>
+      )}
 
       {openIndex !== null && (
         <div
