@@ -2,6 +2,7 @@
 
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
+import { imageSize } from "image-size";
 import { supabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-admin";
 import { requireAdminSession } from "@/lib/session";
 import type { Section } from "@/lib/photos";
@@ -37,12 +38,27 @@ export async function uploadPhoto(section: Section, formData: FormData) {
     throw new Error("File is larger than the 25MB upload limit");
   }
 
+  const bytes = new Uint8Array(await file.arrayBuffer());
+
+  // Real pixel dimensions drive the public gallery's justified layout - if
+  // this fails (corrupt file, format image-size can't parse) fall back to
+  // null rather than blocking the upload; the gallery has its own fallback.
+  let width: number | null = null;
+  let height: number | null = null;
+  try {
+    const dims = imageSize(bytes);
+    width = dims.width;
+    height = dims.height;
+  } catch {
+    // leave null
+  }
+
   const db = supabaseAdmin();
   const path = `${section}/${randomUUID()}-${sanitizeFilename(file.name)}`;
 
   const { error: uploadError } = await db.storage
     .from(PHOTOS_BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: false });
+    .upload(path, bytes, { contentType: file.type, upsert: false });
   if (uploadError) throw uploadError;
 
   const { data: maxRow } = await db
@@ -57,6 +73,8 @@ export async function uploadPhoto(section: Section, formData: FormData) {
     section,
     storage_path: path,
     sort_order: (maxRow?.sort_order ?? -1) + 1,
+    width,
+    height,
   });
   if (insertError) throw insertError;
 
