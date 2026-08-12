@@ -20,7 +20,7 @@ export default function AboutForm({ content }: { content: SiteContent }) {
           name="aboutBody"
           defaultValue={content.aboutBody}
           rows={10}
-          placeholder="Separate paragraphs with a blank line."
+          placeholder="Separate paragraphs with a blank line. Link text with [label](https://…). A paragraph that's just a quoted line renders as a pull-quote."
         />
       </label>
 

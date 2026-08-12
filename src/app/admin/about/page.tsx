@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content";
 import AboutForm from "./AboutForm";
+import AboutPhotoForm from "./AboutPhotoForm";
 
 export const metadata = {
   title: "Admin — About",
@@ -26,6 +27,7 @@ export default async function AdminAboutPage() {
         </div>
       </div>
 
+      <AboutPhotoForm photoUrl={content.aboutPhotoUrl} />
       <AboutForm content={content} />
     </div>
   );

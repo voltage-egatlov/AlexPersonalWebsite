@@ -10,7 +10,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alexandra Nikita — Photography",
+  title: "Alexandra Nikita",
   description: "Photography portfolio of Alexandra Nikita.",
 };
 
