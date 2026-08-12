@@ -569,7 +569,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 28px;
-  width: 280px;
+  width: 340px;
   max-width: 100%;
   flex-shrink: 0;
 }
@@ -632,7 +632,10 @@ button {
 }
 
 .contact-row .value {
+  display: inline-block;
+  max-width: 100%;
   font-size: 17px;
+  overflow-wrap: break-word;
 }
 
 /* Admin */
