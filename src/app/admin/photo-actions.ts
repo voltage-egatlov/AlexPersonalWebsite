@@ -148,3 +148,26 @@ export async function setFeaturedPhoto(photoId: string, section: Section) {
 
   revalidateSection(section);
 }
+
+// x/y are percentages (0-100) of where the admin clicked in the photo -
+// the point that should stay in frame when object-fit: cover crops it,
+// most visibly on the narrow mobile home hero.
+export async function setPhotoFocalPoint(
+  photoId: string,
+  section: Section,
+  x: number,
+  y: number
+) {
+  await requireAdminSession();
+
+  const clamp = (n: number) => Math.min(100, Math.max(0, n));
+
+  const db = supabaseAdmin();
+  const { error } = await db
+    .from("photos")
+    .update({ focal_x: clamp(x), focal_y: clamp(y) })
+    .eq("id", photoId);
+  if (error) throw error;
+
+  revalidateSection(section);
+}

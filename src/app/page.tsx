@@ -15,7 +15,10 @@ export default async function Home() {
           alt="Alexandra Nikita - featured photograph"
           fill
           sizes="100vw"
-          style={{ objectFit: "cover" }}
+          style={{
+            objectFit: "cover",
+            objectPosition: `${featured.focalX}% ${featured.focalY}%`,
+          }}
           preload
         />
       ) : (

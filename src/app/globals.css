@@ -800,8 +800,28 @@ button {
 
 .admin-photo-image {
   position: relative;
-  aspect-ratio: 1 / 1;
+  /* Overridden inline per-photo to match its real aspect ratio - see
+     PhotosGrid.tsx. This is just a fallback before that inline style applies. */
+  aspect-ratio: 4 / 3;
   background: var(--paper-dark);
+  cursor: crosshair;
+}
+
+.admin-photo-hint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+
+.admin-photo-focal-point {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--stamp-red);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--paper);
+  pointer-events: none;
 }
 
 .admin-photo-badge {

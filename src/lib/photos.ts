@@ -15,10 +15,15 @@ export type Photo = {
   // fall back to a default aspect ratio.
   width: number | null;
   height: number | null;
+  // Percentage (0-100) of the point that should stay in frame when this
+  // photo is cropped with object-fit: cover - used by the home hero, which
+  // crops in tight on narrow mobile viewports. Defaults to dead center.
+  focalX: number;
+  focalY: number;
 };
 
 const PHOTO_COLUMNS =
-  "id, storage_path, section, sort_order, is_featured, width, height";
+  "id, storage_path, section, sort_order, is_featured, width, height, focal_x, focal_y";
 
 function publicUrlFor(path: string) {
   return supabaseAdmin().storage.from(PHOTOS_BUCKET).getPublicUrl(path).data
@@ -33,6 +38,8 @@ function toPhoto(p: {
   is_featured: boolean;
   width: number | null;
   height: number | null;
+  focal_x: number;
+  focal_y: number;
 }): Photo {
   return {
     id: p.id,
@@ -43,6 +50,8 @@ function toPhoto(p: {
     isFeatured: p.is_featured,
     width: p.width,
     height: p.height,
+    focalX: p.focal_x,
+    focalY: p.focal_y,
   };
 }
 
