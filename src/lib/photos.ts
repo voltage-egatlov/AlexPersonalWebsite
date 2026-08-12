@@ -56,7 +56,7 @@ export async function getSectionCounts(): Promise<Record<Section, number>> {
   }, {} as Record<Section, number>);
 }
 
-// The home hero can be any photo, from either section — whichever the admin
+// The home hero can be any photo, from either section - whichever the admin
 // most recently marked as featured.
 export async function getFeaturedPhoto(): Promise<Photo | null> {
   const db = supabaseAdmin();

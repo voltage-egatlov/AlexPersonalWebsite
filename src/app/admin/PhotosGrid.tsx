@@ -54,7 +54,7 @@ export default function PhotosGrid({
     return (
       <div className="empty-block">
         <span className="stamp-tag">Empty</span>
-        <p>No photos here yet — upload some above.</p>
+        <p>No photos here yet - upload some above.</p>
       </div>
     );
   }

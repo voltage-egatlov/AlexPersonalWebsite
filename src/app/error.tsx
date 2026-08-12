@@ -19,7 +19,7 @@ export default function Error({
       <h1 className="page-title">Something Went Wrong</h1>
       <p>
         The page hit a snag loading this content. This is usually temporary
-        — try again in a moment.
+        - try again in a moment.
       </p>
       <button type="button" className="action-button" onClick={() => unstable_retry()}>
         Try again

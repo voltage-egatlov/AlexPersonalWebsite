@@ -20,22 +20,22 @@ export default function AboutForm({ content }: { content: SiteContent }) {
           name="aboutBody"
           defaultValue={content.aboutBody}
           rows={10}
-          placeholder="Separate paragraphs with a blank line."
+          placeholder="Separate paragraphs with a blank line. Link text with [label](https://…). A paragraph that's just a quoted line renders as a pull-quote."
         />
       </label>
 
       <label className="admin-field">
-        <span className="admin-field-label">Contact — phone</span>
+        <span className="admin-field-label">Contact - phone</span>
         <input type="text" name="contactPhone" defaultValue={content.contactPhone} />
       </label>
 
       <label className="admin-field">
-        <span className="admin-field-label">Contact — email</span>
+        <span className="admin-field-label">Contact - email</span>
         <input type="text" name="contactEmail" defaultValue={content.contactEmail} />
       </label>
 
       <label className="admin-field">
-        <span className="admin-field-label">Contact — Instagram label</span>
+        <span className="admin-field-label">Contact - Instagram label</span>
         <input
           type="text"
           name="contactInstagramLabel"
@@ -44,7 +44,7 @@ export default function AboutForm({ content }: { content: SiteContent }) {
       </label>
 
       <label className="admin-field">
-        <span className="admin-field-label">Contact — Instagram URL</span>
+        <span className="admin-field-label">Contact - Instagram URL</span>
         <input
           type="text"
           name="contactInstagramUrl"

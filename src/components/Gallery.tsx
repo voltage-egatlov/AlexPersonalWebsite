@@ -94,7 +94,7 @@ export default function Gallery({
           className="lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label={`${title} — photo ${openIndex + 1} of ${photos.length}`}
+          aria-label={`${title} - photo ${openIndex + 1} of ${photos.length}`}
           onClick={(e) => {
             if (e.target === e.currentTarget) close();
           }}

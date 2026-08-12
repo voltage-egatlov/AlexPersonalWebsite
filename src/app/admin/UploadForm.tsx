@@ -88,7 +88,7 @@ export default function UploadForm({ section }: { section: Section }) {
         <ul className="admin-upload-status">
           {statuses.map((s) => (
             <li key={s.id} data-state={s.state}>
-              {s.name} — {STATE_LABEL[s.state]}
+              {s.name} - {STATE_LABEL[s.state]}
             </li>
           ))}
         </ul>

@@ -6,7 +6,7 @@ import "./globals.css";
 // Catches failures in the root layout itself (e.g. Sidebar) that error.tsx
 // can't reach, since error.tsx is rendered *inside* that layout. This file
 // replaces the root layout entirely when active, so it must define its own
-// <html>/<body> — kept on-brand with the rest of the case-file system
+// <html>/<body> - kept on-brand with the rest of the case-file system
 // rather than falling back to Next's default unstyled error screen.
 export default function GlobalError({
   error,
@@ -27,7 +27,7 @@ export default function GlobalError({
           <h1 className="page-title">Something Went Wrong</h1>
           <p>
             The site hit a snag loading this page. This is usually
-            temporary — try again in a moment.
+            temporary - try again in a moment.
           </p>
           <button
             type="button"
