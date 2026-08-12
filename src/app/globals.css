@@ -390,7 +390,6 @@ a {
 .tile {
   position: relative;
   flex-shrink: 0;
-  border: 1px solid var(--ink);
   cursor: pointer;
   padding: 0;
   background: var(--paper-dark);
@@ -534,13 +533,19 @@ a {
   flex-wrap: wrap;
 }
 
-.about-photo {
-  position: relative;
+.about-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
   width: 280px;
   max-width: 100%;
-  aspect-ratio: 3 / 4;
   flex-shrink: 0;
-  border: 1px solid var(--ink);
+}
+
+.about-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
   background: var(--paper-dark);
   overflow: hidden;
 }
@@ -579,10 +584,8 @@ a {
 /* Contact */
 
 .contact-block {
-  margin-top: 28px;
   border: 1px solid var(--ink);
-  padding: 28px 32px;
-  max-width: 420px;
+  padding: 24px 26px;
   display: flex;
   flex-direction: column;
   gap: 18px;

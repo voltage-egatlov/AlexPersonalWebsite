@@ -87,26 +87,16 @@ export default async function AboutPage() {
         </div>
       ) : (
         <div className="about-layout">
-          {content.aboutPhotoUrl && (
-            <div className="about-photo">
-              <Image
-                src={content.aboutPhotoUrl}
-                alt="Alexandra Nikita"
-                fill
-                sizes="(max-width: 720px) 100vw, 280px"
-              />
-            </div>
-          )}
-
-          <div className="about-copy">
-            {paragraphs.map((p, i) =>
-              isPullQuote(p) ? (
-                <blockquote key={i} className="about-quote">
-                  {renderInline(p)}
-                </blockquote>
-              ) : (
-                <p key={i}>{renderInline(p)}</p>
-              )
+          <div className="about-sidebar">
+            {content.aboutPhotoUrl && (
+              <div className="about-photo">
+                <Image
+                  src={content.aboutPhotoUrl}
+                  alt="Alexandra Nikita"
+                  fill
+                  sizes="(max-width: 720px) 100vw, 280px"
+                />
+              </div>
             )}
 
             {contactRows.length > 0 && (
@@ -120,6 +110,18 @@ export default async function AboutPage() {
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+
+          <div className="about-copy">
+            {paragraphs.map((p, i) =>
+              isPullQuote(p) ? (
+                <blockquote key={i} className="about-quote">
+                  {renderInline(p)}
+                </blockquote>
+              ) : (
+                <p key={i}>{renderInline(p)}</p>
+              )
             )}
           </div>
         </div>
