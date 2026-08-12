@@ -10,6 +10,10 @@
   --rule: rgba(42, 35, 24, 0.35);
   --sidebar-width: 250px;
   --sidebar-bg: #e8f8f6;
+  /* Fixed header/tab-bar heights on mobile - kept as variables so the page
+     padding that clears them can never drift out of sync. */
+  --mobile-topbar-h: 50px;
+  --mobile-bottombar-h: 60px;
 }
 
 * {
@@ -39,6 +43,14 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+a,
+button {
+  /* Kill the tap-flash rectangle and the 300ms tap delay so every tap
+     responds like a native control, not a mobile web page. */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* Sidebar */
@@ -115,6 +127,12 @@ a {
   background: rgba(163, 51, 38, 0.08);
 }
 
+/* Icons only exist for the mobile bottom tab bar - the desktop rail stays
+   text-only, matching the rest of the site's typewriter minimalism. */
+.sidebar-nav-icon {
+  display: none;
+}
+
 .sidebar-footer {
   margin-top: auto;
   display: flex;
@@ -141,6 +159,9 @@ a {
   position: relative;
   width: 100%;
   height: 100vh;
+  /* dvh tracks the *actual* visible viewport, so the hero doesn't jump
+     when a mobile browser's address bar shows or hides on scroll. */
+  height: 100dvh;
 }
 
 .home-hero-caption {
@@ -411,12 +432,23 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* We drive prev/next/dismiss off raw touch events, not the browser's
+     own pan/zoom handling - hand it full control of the gesture. */
+  touch-action: none;
 }
 
 .lightbox-image {
   position: relative;
   width: 82vw;
   height: 82vh;
+}
+
+/* Carries the live swipe transform, kept separate from .lightbox-image
+   so it never fights that element's own mount-in keyframe animation. */
+.lightbox-drag {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -458,8 +490,8 @@ a {
 
 .lightbox-close {
   position: absolute;
-  top: 16px;
-  right: 24px;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(24px, calc(12px + env(safe-area-inset-right)));
   width: 44px;
   height: 44px;
   display: flex;
@@ -487,16 +519,16 @@ a {
 }
 
 .lightbox-arrow.left {
-  left: 12px;
+  left: max(12px, env(safe-area-inset-left));
 }
 
 .lightbox-arrow.right {
-  right: 12px;
+  right: max(12px, env(safe-area-inset-right));
 }
 
 .lightbox-count {
   position: absolute;
-  bottom: 24px;
+  bottom: max(24px, calc(12px + env(safe-area-inset-bottom)));
   left: 50%;
   transform: translateX(-50%) rotate(-1deg);
   background: var(--paper);
@@ -872,28 +904,111 @@ a {
 }
 
 @media (max-width: 720px) {
+  /* The desktop rail splits into two independent fixed bars - a slim
+     identity strip pinned to the top, a thumb-reachable tab bar pinned to
+     the bottom - both floating over the content instead of pushing it
+     down, so the hero photo still runs edge-to-edge like a native app. */
   .sidebar {
     position: static;
-    width: 100%;
+    width: auto;
     height: auto;
     flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    background: none;
     border-right: none;
-    border-bottom: 3px solid var(--ink);
-    padding: 16px 18px;
+    padding: 0;
   }
 
   .sidebar-header {
-    border-bottom: none;
-    padding-bottom: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--mobile-topbar-h);
+    padding: 8px 16px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--ink);
     margin-bottom: 0;
   }
 
+  .sidebar-tag {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .sidebar-name {
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar-name br {
+    display: none;
+  }
+
   .sidebar-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
     flex-direction: row;
-    flex-wrap: wrap;
+    gap: 0;
+    background: var(--sidebar-bg);
+    border-top: 2px solid var(--ink);
+    padding: 0 0 env(safe-area-inset-bottom);
+    box-shadow: 0 -6px 16px rgba(42, 35, 24, 0.1);
+  }
+
+  .sidebar-nav li {
+    flex: 1;
+  }
+
+  .sidebar-nav a {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-height: var(--mobile-bottombar-h);
+    padding: 6px 4px;
+    border: none;
+    font-size: 9.5px;
+  }
+
+  .sidebar-nav a:active {
+    background: rgba(42, 35, 24, 0.06);
+  }
+
+  .sidebar-nav a.active {
+    background: none;
+  }
+
+  .sidebar-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-nav-label {
+    position: relative;
+  }
+
+  /* A small rotated stamp-mark under the active label, echoing the
+     FILE NO. tag's own tilt instead of a generic pill/underline. */
+  .sidebar-nav a.active .sidebar-nav-label::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 14px;
+    height: 2px;
+    background: var(--stamp-red);
+    transform: translateX(-50%) rotate(-3deg);
   }
 
   .sidebar-footer {
@@ -904,13 +1019,33 @@ a {
     margin-left: 0;
   }
 
-  .home-hero {
-    height: 70vh;
+  .home-hero-caption {
+    left: max(16px, env(safe-area-inset-left));
+    bottom: calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 16px);
   }
 
-  .page,
+  .page {
+    padding: calc(var(--mobile-topbar-h) + env(safe-area-inset-top) + 20px) 20px
+      calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 28px);
+  }
+
+  .page--section-header {
+    padding-bottom: 24px;
+  }
+
   .tile-grid {
-    padding-left: 24px;
-    padding-right: 24px;
+    padding: 0 16px calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 28px);
+  }
+
+  .section-body {
+    padding: 0 20px calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 28px);
+  }
+
+  /* 16px is the line iOS Safari uses to decide whether to zoom in on
+     focus - anything smaller and tapping a field yanks the whole page in. */
+  .admin-login-form input,
+  .admin-field input,
+  .admin-field textarea {
+    font-size: 16px;
   }
 }

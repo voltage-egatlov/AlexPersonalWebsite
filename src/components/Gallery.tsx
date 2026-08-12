@@ -21,6 +21,13 @@ const DEFAULT_ASPECT = 4 / 3;
 const LAST_ROW_JUSTIFY_THRESHOLD = 0.5;
 const LAST_ROW_MAX_SCALE = 1.35;
 
+// Lightbox touch gestures - drag down to dismiss (Photos-app style),
+// swipe left/right to browse. Thresholds are resolved on release rather
+// than live, so a short tap never gets misread as a swipe.
+const SWIPE_DISMISS_THRESHOLD = 90;
+const SWIPE_NAV_THRESHOLD = 55;
+const SWIPE_NAV_MAX_DURATION = 600;
+
 function targetRowHeight(containerWidth: number) {
   if (containerWidth < 480) return 130;
   if (containerWidth < 900) return 190;
@@ -163,6 +170,73 @@ export default function Gallery({
     }
   }, [openIndex]);
 
+  // Lock the page underneath so a swipe inside the lightbox can't rubber-band
+  // scroll the gallery behind it on iOS/Android.
+  const lightboxOpen = openIndex !== null;
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [lightboxOpen]);
+
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY, time: Date.now() };
+    setIsDragging(true);
+  }, []);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    if (!start) return;
+    const t = e.touches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    // Whichever axis currently leads wins the drag - lets a gesture that
+    // starts diagonal settle into either a dismiss or a browse swipe.
+    if (Math.abs(dy) >= Math.abs(dx)) {
+      setDragOffset({ x: 0, y: Math.max(dy, 0) });
+    } else {
+      setDragOffset({ x: dx, y: 0 });
+    }
+  }, []);
+
+  const onTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const start = touchStartRef.current;
+      touchStartRef.current = null;
+      setIsDragging(false);
+      setDragOffset({ x: 0, y: 0 });
+      if (!start) return;
+
+      const t = e.changedTouches[0];
+      const dx = t.clientX - start.x;
+      const dy = t.clientY - start.y;
+      const elapsed = Date.now() - start.time;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (absY >= absX && dy > SWIPE_DISMISS_THRESHOLD) {
+        close();
+      } else if (absX > absY && absX > SWIPE_NAV_THRESHOLD && elapsed < SWIPE_NAV_MAX_DURATION) {
+        if (dx > 0) prev();
+        else next();
+      }
+    },
+    [close, prev, next]
+  );
+
+  const chromeStyle: React.CSSProperties = {
+    opacity: isDragging && dragOffset.y > 12 ? 0 : 1,
+    transition: "opacity 0.15s ease",
+  };
+
   return (
     <>
       <div ref={gridRef} className="tile-grid" style={{ gap: GAP }}>
@@ -223,30 +297,62 @@ export default function Gallery({
           role="dialog"
           aria-modal="true"
           aria-label={`${title} - photo ${openIndex + 1} of ${photos.length}`}
+          style={
+            isDragging && dragOffset.y > 0
+              ? { backgroundColor: `rgba(20, 16, 8, ${Math.max(0.94 - dragOffset.y / 260, 0.35)})` }
+              : undefined
+          }
           onClick={(e) => {
             if (e.target === e.currentTarget) close();
           }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
-          <button ref={closeButtonRef} className="lightbox-close" onClick={close} aria-label="Close">
+          <button
+            ref={closeButtonRef}
+            className="lightbox-close"
+            onClick={close}
+            aria-label="Close"
+            style={chromeStyle}
+          >
             ×
           </button>
-          <button className="lightbox-arrow left" onClick={prev} aria-label="Previous photo">
+          <button
+            className="lightbox-arrow left"
+            onClick={prev}
+            aria-label="Previous photo"
+            style={chromeStyle}
+          >
             ‹
           </button>
           <div className="lightbox-image">
-            <Image
-              src={photos[openIndex].url}
-              alt={`${title} ${openIndex + 1}`}
-              fill
-              sizes="82vw"
-              style={{ objectFit: "contain" }}
-              preload
-            />
+            <div
+              className="lightbox-drag"
+              style={{
+                transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
+                transition: isDragging ? "none" : "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <Image
+                src={photos[openIndex].url}
+                alt={`${title} ${openIndex + 1}`}
+                fill
+                sizes="82vw"
+                style={{ objectFit: "contain" }}
+                preload
+              />
+            </div>
           </div>
-          <button className="lightbox-arrow right" onClick={next} aria-label="Next photo">
+          <button
+            className="lightbox-arrow right"
+            onClick={next}
+            aria-label="Next photo"
+            style={chromeStyle}
+          >
             ›
           </button>
-          <span className="lightbox-count">
+          <span className="lightbox-count" style={chromeStyle}>
             {openIndex + 1} / {photos.length}
           </span>
           <span className="lightbox-hint" aria-hidden="true">
