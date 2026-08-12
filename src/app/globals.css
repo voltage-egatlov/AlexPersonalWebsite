@@ -561,7 +561,7 @@ button {
 .about-layout {
   display: flex;
   align-items: flex-start;
-  gap: 40px;
+  gap: 32px;
   flex-wrap: wrap;
 }
 
@@ -569,7 +569,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 28px;
-  width: 340px;
+  width: 300px;
   max-width: 100%;
   flex-shrink: 0;
 }
@@ -587,7 +587,11 @@ button {
 }
 
 .about-copy {
-  flex: 1 1 380px;
+  /* A small flex-basis, not the ~65ch prose width, is what the wrap
+     decision is measured against - keeping it low lets the two columns
+     hold side by side on tablet-width viewports instead of stacking
+     well before the text actually needs the room. */
+  flex: 1 1 240px;
   min-width: 0;
 }
 
