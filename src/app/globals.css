@@ -175,11 +175,11 @@ button {
 .home-hero-caption .name {
   margin: 0;
   font-family: inherit;
-  font-size: 28px;
+  font-size: 44px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink);
+  text-transform: lowercase;
+  letter-spacing: -0.01em;
+  color: var(--stamp-red);
 }
 
 .home-hero-caption .sub {
