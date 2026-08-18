@@ -7,6 +7,10 @@
   --ink: #2a2318;
   --ink-soft: #4c412c;
   --stamp-red: #a33326;
+  /* Brighter than --stamp-red - reserved for the large display name (home
+     hero + sidebar), which needs more punch than the small dossier accents
+     that use --stamp-red. */
+  --name-red: #da3e2c;
   --rule: rgba(42, 35, 24, 0.35);
   --sidebar-width: 250px;
   --sidebar-bg: #e8f8f6;
@@ -88,11 +92,13 @@ button {
 
 .sidebar-name {
   margin: 0;
-  font-size: 22px;
-  line-height: 1.25;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  color: var(--name-red);
 }
 
 .sidebar-nav {
@@ -166,20 +172,44 @@ button {
 
 .home-hero-caption {
   position: absolute;
-  left: 32px;
-  bottom: 32px;
   z-index: 5;
   font-family: Helvetica, Arial, sans-serif;
+}
+
+/* Which corner the caption lands in is picked per-photo on the server (see
+   pickCaptionCorner in lib/caption-placement.ts) so it can dodge whatever
+   part of the image is busiest or closest to --name-red in hue - bottom-left
+   is just the fallback/default look. */
+.home-hero-caption--bottom-left {
+  left: 32px;
+  bottom: 32px;
+}
+
+.home-hero-caption--bottom-right {
+  right: 32px;
+  bottom: 32px;
+  text-align: right;
+}
+
+.home-hero-caption--top-left {
+  left: 32px;
+  top: 32px;
+}
+
+.home-hero-caption--top-right {
+  right: 32px;
+  top: 32px;
+  text-align: right;
 }
 
 .home-hero-caption .name {
   margin: 0;
   font-family: inherit;
-  font-size: 44px;
+  font-size: 52px;
   font-weight: 700;
   text-transform: lowercase;
   letter-spacing: -0.01em;
-  color: var(--stamp-red);
+  color: var(--name-red);
 }
 
 .home-hero-caption .sub {
@@ -1047,9 +1077,24 @@ button {
     margin-left: 0;
   }
 
-  .home-hero-caption {
-    left: max(16px, env(safe-area-inset-left));
+  .home-hero-caption--bottom-left,
+  .home-hero-caption--bottom-right {
     bottom: calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 16px);
+  }
+
+  .home-hero-caption--top-left,
+  .home-hero-caption--top-right {
+    top: calc(var(--mobile-topbar-h) + env(safe-area-inset-top) + 16px);
+  }
+
+  .home-hero-caption--bottom-left,
+  .home-hero-caption--top-left {
+    left: max(16px, env(safe-area-inset-left));
+  }
+
+  .home-hero-caption--bottom-right,
+  .home-hero-caption--top-right {
+    right: max(16px, env(safe-area-inset-right));
   }
 
   .page {
