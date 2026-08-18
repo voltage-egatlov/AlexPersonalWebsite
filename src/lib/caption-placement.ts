@@ -5,19 +5,40 @@ import sharp from "sharp";
 // disappear. Runs server-side against a downsized copy of the featured
 // photo - cheap enough to do per-request, but cached per photo id since the
 // featured photo rarely changes between requests on a warm server instance.
+//
+// The hero photo is rendered with object-fit: cover, so what's actually
+// visible is a crop of the source image centered on the photo's focal point
+// - and that crop is a different shape on a narrow phone than on a wide
+// desktop window. A corner that's clash-free in the desktop crop can still
+// land right on the subject once the mobile crop zooms in, so placement is
+// computed once per plausible viewport shape rather than once for the whole
+// source image.
 
 export type CaptionCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
+export type CaptionPlacement = {
+  desktop: CaptionCorner;
+  mobile: CaptionCorner;
+};
+
 const DEFAULT_CORNER: CaptionCorner = "bottom-left";
+const DEFAULT_PLACEMENT: CaptionPlacement = { desktop: DEFAULT_CORNER, mobile: DEFAULT_CORNER };
+
+// Representative aspect ratios (width / height) for the two layouts the hero
+// actually ships - a wide desktop window and a tall phone screen. Doesn't
+// need to match any specific device, just which side of the source image
+// object-fit: cover ends up cropping into.
+const DESKTOP_ASPECT = 16 / 9;
+const MOBILE_ASPECT = 9 / 19.5;
 
 // Keep in sync with --name-red in globals.css - this is the color the
 // caption text actually renders in, so it's what we're checking for clashes
 // against.
 const TEXT_COLOR = { r: 0xda, g: 0x3e, b: 0x2c };
 
-// Fraction of the image's width/height each corner region covers. Roughly
-// matches the footprint the caption actually occupies once placed.
-const CORNER_FRACTION = { x: 0.4, y: 0.32 };
+// Fraction of the *visible crop* each corner region covers - roughly the
+// footprint the caption actually occupies once placed.
+const CORNER_FRACTION = { x: 0.55, y: 0.34 };
 
 const CORNERS: { key: CaptionCorner; x0: number; y0: number }[] = [
   { key: "top-left", x0: 0, y0: 0 },
@@ -29,7 +50,7 @@ const CORNERS: { key: CaptionCorner; x0: number; y0: number }[] = [
 // Small in-memory cache so a warm server instance doesn't re-download and
 // re-analyze the same featured photo on every home page hit. Keyed by photo
 // id, so it self-invalidates whenever the admin features a different photo.
-const cornerCache = new Map<string, CaptionCorner>();
+const placementCache = new Map<string, CaptionPlacement>();
 
 function srgbToLinear(channel: number) {
   const c = channel / 255;
@@ -77,39 +98,51 @@ function hueDistance(a: number, b: number) {
   return d > 180 ? 360 - d : d;
 }
 
-async function computeCorner(imageUrl: string): Promise<CaptionCorner> {
-  const res = await fetch(imageUrl);
-  if (!res.ok) return DEFAULT_CORNER;
-  const buffer = Buffer.from(await res.arrayBuffer());
+// Mirrors the browser's object-fit: cover + object-position math: given the
+// source image's aspect ratio, the container's aspect ratio, and a focal
+// point (0-100 percent, same convention as CSS object-position), returns the
+// visible crop as a fractional rect of the source image (0-1).
+function visibleCropRect(
+  imageAspect: number,
+  containerAspect: number,
+  focalXPct: number,
+  focalYPct: number
+) {
+  const visibleWidthFrac = imageAspect > containerAspect ? containerAspect / imageAspect : 1;
+  const visibleHeightFrac = imageAspect > containerAspect ? 1 : imageAspect / containerAspect;
+  return {
+    x0: (1 - visibleWidthFrac) * (focalXPct / 100),
+    y0: (1 - visibleHeightFrac) * (focalYPct / 100),
+    w: visibleWidthFrac,
+    h: visibleHeightFrac,
+  };
+}
 
-  // Downsizing first means the per-corner loop below is just a few hundred
-  // pixels of work - only the region averages/variance matter, not the
-  // actual pixels.
-  const GRID = 60;
-  const { data, info } = await sharp(buffer)
-    .resize(GRID, GRID, { fit: "fill" })
-    .removeAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  const { width, height, channels } = info;
-
-  const textHsl = rgbToHsl(TEXT_COLOR.r, TEXT_COLOR.g, TEXT_COLOR.b);
-
+function bestCornerForCrop(
+  data: Buffer,
+  width: number,
+  height: number,
+  channels: number,
+  crop: { x0: number; y0: number; w: number; h: number },
+  textHsl: { h: number; s: number; l: number }
+): CaptionCorner {
   let best = DEFAULT_CORNER;
   let bestScore = -Infinity;
 
   for (const corner of CORNERS) {
-    const x0 = Math.floor(corner.x0 * width);
-    const x1 = Math.ceil((corner.x0 + CORNER_FRACTION.x) * width);
-    const y0 = Math.floor(corner.y0 * height);
-    const y1 = Math.ceil((corner.y0 + CORNER_FRACTION.y) * height);
+    // Corner fractions are relative to the visible crop, then mapped back
+    // into absolute source-image fractions before indexing pixels.
+    const x0 = Math.floor((crop.x0 + corner.x0 * crop.w) * width);
+    const x1 = Math.ceil((crop.x0 + (corner.x0 + CORNER_FRACTION.x) * crop.w) * width);
+    const y0 = Math.floor((crop.y0 + corner.y0 * crop.h) * height);
+    const y1 = Math.ceil((crop.y0 + (corner.y0 + CORNER_FRACTION.y) * crop.h) * height);
 
     let sumR = 0;
     let sumG = 0;
     let sumB = 0;
     const luminances: number[] = [];
-    for (let y = y0; y < y1; y++) {
-      for (let x = x0; x < x1; x++) {
+    for (let y = Math.max(0, y0); y < Math.min(height, y1); y++) {
+      for (let x = Math.max(0, x0); x < Math.min(width, x1); x++) {
         const idx = (y * width + x) * channels;
         const r = data[idx];
         const g = data[idx + 1];
@@ -153,17 +186,60 @@ async function computeCorner(imageUrl: string): Promise<CaptionCorner> {
   return best;
 }
 
-export async function pickCaptionCorner(photo: { id: string; url: string }): Promise<CaptionCorner> {
-  const cached = cornerCache.get(photo.id);
+async function computePlacement(
+  imageUrl: string,
+  imageWidth: number | null,
+  imageHeight: number | null,
+  focalX: number,
+  focalY: number
+): Promise<CaptionPlacement> {
+  const res = await fetch(imageUrl);
+  if (!res.ok) return DEFAULT_PLACEMENT;
+  const buffer = Buffer.from(await res.arrayBuffer());
+
+  // Downsizing first means the per-corner loop below is just a few hundred
+  // pixels of work - only the region averages/variance matter, not the
+  // actual pixels. Resizing to a fixed square (rather than preserving the
+  // source aspect ratio) keeps the pixel-fraction math below simple; it
+  // doesn't need to look like the source, just sample it evenly.
+  const GRID = 80;
+  const { data, info } = await sharp(buffer)
+    .resize(GRID, GRID, { fit: "fill" })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+
+  const imageAspect = imageWidth && imageHeight ? imageWidth / imageHeight : 1;
+  const textHsl = rgbToHsl(TEXT_COLOR.r, TEXT_COLOR.g, TEXT_COLOR.b);
+
+  const desktopCrop = visibleCropRect(imageAspect, DESKTOP_ASPECT, focalX, focalY);
+  const mobileCrop = visibleCropRect(imageAspect, MOBILE_ASPECT, focalX, focalY);
+
+  return {
+    desktop: bestCornerForCrop(data, width, height, channels, desktopCrop, textHsl),
+    mobile: bestCornerForCrop(data, width, height, channels, mobileCrop, textHsl),
+  };
+}
+
+export async function pickCaptionPlacement(photo: {
+  id: string;
+  url: string;
+  width: number | null;
+  height: number | null;
+  focalX: number;
+  focalY: number;
+}): Promise<CaptionPlacement> {
+  const cached = placementCache.get(photo.id);
   if (cached) return cached;
 
   try {
-    const corner = await computeCorner(photo.url);
-    cornerCache.set(photo.id, corner);
-    return corner;
+    const placement = await computePlacement(photo.url, photo.width, photo.height, photo.focalX, photo.focalY);
+    placementCache.set(photo.id, placement);
+    return placement;
   } catch {
     // Any fetch/decode failure just falls back to the original placement -
     // never let this block the page from rendering.
-    return DEFAULT_CORNER;
+    return DEFAULT_PLACEMENT;
   }
 }

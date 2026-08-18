@@ -1077,24 +1077,50 @@ button {
     margin-left: 0;
   }
 
-  .home-hero-caption--bottom-left,
-  .home-hero-caption--bottom-right {
-    bottom: calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 16px);
+  /* Mobile gets its own corner pick (data-mobile-corner, from
+     pickCaptionPlacement) rather than reusing the desktop corner class -
+     object-fit: cover crops the hero photo very differently on a narrow
+     phone, so the safest corner can be a different one entirely. The
+     attribute selector's higher specificity overrides the desktop
+     .home-hero-caption--* rule outside this media query. */
+  .home-hero-caption {
+    max-width: calc(100% - 32px);
   }
 
-  .home-hero-caption--top-left,
-  .home-hero-caption--top-right {
-    top: calc(var(--mobile-topbar-h) + env(safe-area-inset-top) + 16px);
+  .home-hero-caption .name {
+    font-size: 34px;
   }
 
-  .home-hero-caption--bottom-left,
-  .home-hero-caption--top-left {
+  .home-hero-caption[data-mobile-corner="bottom-left"] {
     left: max(16px, env(safe-area-inset-left));
+    right: auto;
+    top: auto;
+    bottom: calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 16px);
+    text-align: left;
   }
 
-  .home-hero-caption--bottom-right,
-  .home-hero-caption--top-right {
+  .home-hero-caption[data-mobile-corner="bottom-right"] {
     right: max(16px, env(safe-area-inset-right));
+    left: auto;
+    top: auto;
+    bottom: calc(var(--mobile-bottombar-h) + env(safe-area-inset-bottom) + 16px);
+    text-align: right;
+  }
+
+  .home-hero-caption[data-mobile-corner="top-left"] {
+    left: max(16px, env(safe-area-inset-left));
+    right: auto;
+    bottom: auto;
+    top: calc(var(--mobile-topbar-h) + env(safe-area-inset-top) + 16px);
+    text-align: left;
+  }
+
+  .home-hero-caption[data-mobile-corner="top-right"] {
+    right: max(16px, env(safe-area-inset-right));
+    left: auto;
+    bottom: auto;
+    top: calc(var(--mobile-topbar-h) + env(safe-area-inset-top) + 16px);
+    text-align: right;
   }
 
   .page {
